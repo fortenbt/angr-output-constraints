@@ -4,19 +4,19 @@
 
 #define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
 
+typedef struct config_s {
+    uint32_t magic;     // +0x00
+    uint16_t vid;       // +0x04
+    uint16_t did;       // +0x06
+    char array[0x10];   // +0x08
+} config_t;             // sizeof(config_t) == 0x18
+
+config_t m_cfgs[4];
+
 /**
  * This input_buf is used to populate the module-global m_cfgs structure array.
  */
-char input_buf[80];
-
-typedef struct config_s {
-    uint32_t magic;
-    uint16_t vid;
-    uint16_t did;
-    char array[0x10];
-} config_t;
-
-config_t m_cfgs[4];
+char input_buf[sizeof(m_cfgs)];
 
 /**
  * This is the known good result that we're looking for.

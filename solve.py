@@ -6,6 +6,7 @@ def symbolic_execution():
     p = angr.Project('test', auto_load_libs=False)
 
     known_good = p.loader.find_symbol('known_good').rebased_addr
+    output = p.loader.find_symbol('m_cfgs').rebased_addr
     main = p.loader.find_symbol('main').rebased_addr
     tgt = p.loader.find_symbol('angr_target').rebased_addr
     input_buf = p.loader.find_symbol('input_buf').rebased_addr
@@ -23,6 +24,9 @@ def symbolic_execution():
     sm.explore(find=tgt)
 
     goal_state = sm.found[0]
+    for i in range(4*0x18):
+        goal_state.solver.add(goal_state.mem[output + i].uint8_t.resolved == goal_state.mem[known_good + i].uint8_t.resolved)
+
     input_data = goal_state.memory.load(input_buf, input_buf_sz)
     answer = goal_state.solver.eval(input_data, cast_to=bytes)
     print(answer)
